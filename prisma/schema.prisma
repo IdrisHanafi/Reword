@@ -7,18 +7,54 @@ generator client {
   provider = "prisma-client-js"
 }
 
-model Post {
-  id        Int     @id @default(autoincrement())
-  title     String
-  content   String?
-  published Boolean @default(false)
-  author    User?   @relation(fields: [authorId], references: [id])
-  authorId  Int?
-}
-
 model User {
   id    Int     @id @default(autoincrement())
-  email String  @unique
-  name  String?
-  posts Post[]
+  name  String
+  host Boolean @default(false)
+  game Game @relation(fields: [gameId], references: [id])
+  gameId Int
+  gameGuess  UserGuess[]
+  hostWord HostWord
 }
+
+model Game {
+  id    Int     @id @default(autoincrement())
+  users User[]
+  start  DateTime  @default(now())
+  gameEnd   DateTime? @updatedAt
+  abandoned Boolean @default(false)
+  completed Boolean @default(false)
+  joinCode    Int
+  userGuess UserGuess[]
+  hostWord HostWord
+}
+
+model UserGuess {
+  id    Int     @id @default(autoincrement())
+  userId Int
+  user User @relation(fields: [userId], references: [id])
+  gameId Int
+  game Game @relation(fields: [gameId], references: [id])
+  created DateTime @default(now())
+  guess String
+}
+
+model HostWord {
+  id    Int     @id @default(autoincrement())
+  userId Int
+  user User @relation(fields: [userId], references: [id])
+  gameId Int
+  game Game @relation(fields: [gameId], references: [id])
+  created DateTime @default(now())
+  word String
+}
+
+model UserVote {
+  id    Int     @id @default(autoincrement())
+  userId Int // Voter
+  user User @relation(fields: [userId], references: [id])
+  userGuessId Int // Voted Word
+  userGuess UserGuess @relation(fields: [userGuessId], references: [id])
+  created DateTime @default(now())
+}
+
