@@ -14,7 +14,8 @@ model User {
   game Game @relation(fields: [gameId], references: [id])
   gameId Int
   gameGuess  UserGuess[]
-  hostWord HostWord
+  userVote UserVote[]
+  hostWord HostWord?
 }
 
 model Game {
@@ -26,7 +27,7 @@ model Game {
   completed Boolean @default(false)
   joinCode    Int
   userGuess UserGuess[]
-  hostWord HostWord
+  hostWord HostWord?
 }
 
 model UserGuess {
@@ -37,14 +38,15 @@ model UserGuess {
   game Game @relation(fields: [gameId], references: [id])
   created DateTime @default(now())
   guess String
+  userVote UserVote[]
 }
 
 model HostWord {
   id    Int     @id @default(autoincrement())
-  userId Int
-  user User @relation(fields: [userId], references: [id])
-  gameId Int
-  game Game @relation(fields: [gameId], references: [id])
+  userId Int?
+  user User? @relation(fields: [userId], references: [id])
+  gameId Int?
+  game Game? @relation(fields: [gameId], references: [id])
   created DateTime @default(now())
   word String
 }

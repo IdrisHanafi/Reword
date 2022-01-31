@@ -1,0 +1,56 @@
+-- CreateTable
+CREATE TABLE "User" (
+    "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    "name" TEXT NOT NULL,
+    "host" BOOLEAN NOT NULL DEFAULT false,
+    "gameId" INTEGER NOT NULL,
+    CONSTRAINT "User_gameId_fkey" FOREIGN KEY ("gameId") REFERENCES "Game" ("id") ON DELETE RESTRICT ON UPDATE CASCADE
+);
+
+-- CreateTable
+CREATE TABLE "Game" (
+    "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    "start" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "gameEnd" DATETIME,
+    "abandoned" BOOLEAN NOT NULL DEFAULT false,
+    "completed" BOOLEAN NOT NULL DEFAULT false,
+    "joinCode" INTEGER NOT NULL
+);
+
+-- CreateTable
+CREATE TABLE "UserGuess" (
+    "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    "userId" INTEGER NOT NULL,
+    "gameId" INTEGER NOT NULL,
+    "created" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "guess" TEXT NOT NULL,
+    CONSTRAINT "UserGuess_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User" ("id") ON DELETE RESTRICT ON UPDATE CASCADE,
+    CONSTRAINT "UserGuess_gameId_fkey" FOREIGN KEY ("gameId") REFERENCES "Game" ("id") ON DELETE RESTRICT ON UPDATE CASCADE
+);
+
+-- CreateTable
+CREATE TABLE "HostWord" (
+    "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    "userId" INTEGER,
+    "gameId" INTEGER,
+    "created" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "word" TEXT NOT NULL,
+    CONSTRAINT "HostWord_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User" ("id") ON DELETE SET NULL ON UPDATE CASCADE,
+    CONSTRAINT "HostWord_gameId_fkey" FOREIGN KEY ("gameId") REFERENCES "Game" ("id") ON DELETE SET NULL ON UPDATE CASCADE
+);
+
+-- CreateTable
+CREATE TABLE "UserVote" (
+    "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    "userId" INTEGER NOT NULL,
+    "userGuessId" INTEGER NOT NULL,
+    "created" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT "UserVote_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User" ("id") ON DELETE RESTRICT ON UPDATE CASCADE,
+    CONSTRAINT "UserVote_userGuessId_fkey" FOREIGN KEY ("userGuessId") REFERENCES "UserGuess" ("id") ON DELETE RESTRICT ON UPDATE CASCADE
+);
+
+-- CreateIndex
+CREATE UNIQUE INDEX "HostWord_userId_key" ON "HostWord"("userId");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "HostWord_gameId_key" ON "HostWord"("gameId");
